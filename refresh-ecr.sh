@@ -4,10 +4,10 @@ set -e # Exit on any error
 # Variables expected from environment: 
 # TARGET_ROLE_ARN, REGION, SECRET_NAME, TARGET_NAMESPACE
 TARGET_ROLE_ARN="arn:aws:iam::702175642104:role/ecr-image-push"
-SECRET_NAME= "ecr-pull-image-secret"
-REGION= "us-east-1"
+SECRET_NAME="ecr-pull-image-secret"
+REGION="us-east-1"
 #TARGET_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-TARGET_NAMESPACE= default
+TARGET_NAMESPACE="default"
 
 echo "Assuming IAM Role: $TARGET_ROLE_ARN"
 JSON_OUT=$(aws sts assume-role \
