@@ -38,7 +38,7 @@ jobs:
           TAG: v1.0.${{ github.run_number }}
           KUBECONFIG: ./kubeconfig.yaml
           image_name: ${{ github.event.inputs.image-name }}
-          cron-image-name: ${{ github.event.inputs.cron-image-name }}
+          cron_image_name: ${{ github.event.inputs.cron-image-name }}
           SECRET_NAME: ecr-pull-image-secret
           REGION: us-east-1
           TARGET_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
