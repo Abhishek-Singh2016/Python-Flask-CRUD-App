@@ -3,7 +3,7 @@ set -e # Exit on any error
 
 # Variables expected from environment: 
 # TARGET_ROLE_ARN, REGION, SECRET_NAME, TARGET_NAMESPACE
-
+TARGET_ROLE_ARN="arn:aws:iam::702175642104:role/ecr-image-push"
 echo "Assuming IAM Role: $TARGET_ROLE_ARN"
 JSON_OUT=$(aws sts assume-role \
   --role-arn "$TARGET_ROLE_ARN" \
