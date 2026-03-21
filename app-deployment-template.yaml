@@ -11,7 +11,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # name of the deployment
-  name: python-app-deployment
+  name: python-ui-app
   labels:
      app: python_app
 spec:
