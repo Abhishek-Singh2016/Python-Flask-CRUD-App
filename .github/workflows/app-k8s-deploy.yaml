@@ -7,6 +7,9 @@ on:
         image-name:
           description: 'Docker image name with tag to deploy'
           required: true # This enables the manual "Run workflow" button
+        cron-image-name:
+          description: 'Docker image name with tag for cron job to refresh secret'  
+          required: true
         
 jobs:
   Build-pythonapp-FLASK:
@@ -35,6 +38,11 @@ jobs:
           TAG: v1.0.${{ github.run_number }}
           KUBECONFIG: ./kubeconfig.yaml
           image_name: ${{ github.event.inputs.image-name }}
+          cron-image-name: ${{ github.event.inputs.cron-image-name }}
+          SECRET_NAME: ecr-pull-image-secret
+          REGION: us-east-1
+          TARGET_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
         
         run: |
           echo "${{ secrets.KUBECONFIG_DATA }}" > kubeconfig.yaml
@@ -49,6 +57,12 @@ jobs:
           EOF
           docker build -f dockerfile -t $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }} .
           docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }}
+          docker build -f dockerfile-cron-secret-update -t $ECR_REGISTRY/$REPO:${{ github.event.inputs.cron-image-name }}-${{ env.TAG }} .
+          docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.cron-image-name }}-${{ env.TAG }}
+          kubectl apply -f ./templates/serviceaccount-refresh.yaml --kubeconfig=./kubeconfig.yaml
+          kubectl apply -f ./templates/secret-refresher-cron.yaml --kubeconfig=./kubeconfig.yaml
+          kubectl get cronjobs --kubeconfig=./kubeconfig.yaml
+          kubectl get serviceaccounts --kubeconfig=./kubeconfig.yaml
           pwd
           echo "702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:$image_name-$TAG"
           #kubectl create secret docker-registry ecr-pull-image-secret \
