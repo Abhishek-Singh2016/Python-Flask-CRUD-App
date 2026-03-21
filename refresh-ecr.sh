@@ -3,7 +3,7 @@ set -e # Exit on any error
 
 # Variables expected from environment: 
 # TARGET_ROLE_ARN, REGION, SECRET_NAME, TARGET_NAMESPACE
-TARGET_ROLE_ARN="arn:aws:iam::702175642104:role/ecr-image-push"
+TARGET_ROLE_ARN="arn:aws:iam::702175642104:role/ecr-k8s-image-pull"
 SECRET_NAME="ecr-pull-image-secret"
 REGION="us-east-1"
 #TARGET_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -18,6 +18,7 @@ aws sts assume-role \
 JSON_OUT=$(aws sts assume-role \
   --role-arn "$TARGET_ROLE_ARN" \
   --role-session-name "K8sRefreshSession")
+
 echo "$(which sed)"
 
 echo "$JSON_OUT"
