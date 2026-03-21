@@ -10,7 +10,7 @@ REGION="us-east-1"
 TARGET_NAMESPACE="default"
 
 echo "Assuming IAM Role: $TARGET_ROLE_ARN"
-
+env
 aws sts assume-role \
   --role-arn "$TARGET_ROLE_ARN" \
   --role-session-name "K8sRefreshSession"
@@ -33,7 +33,7 @@ ECR_PASSWORD=$(aws ecr get-login-password --region "$REGION")
 
 echo "Updating Kubernetes Secret: $SECRET_NAME in $TARGET_NAMESPACE"
 kubectl create secret docker-registry "$SECRET_NAME" \
-  --docker-server="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com" \
+  --docker-server="702175642104.dkr.ecr.${REGION}.amazonaws.com" \
   --docker-username=AWS \
   --docker-password="$ECR_PASSWORD" \
   --namespace "$TARGET_NAMESPACE" \
