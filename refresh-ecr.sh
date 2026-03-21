@@ -10,9 +10,15 @@ REGION="us-east-1"
 TARGET_NAMESPACE="default"
 
 echo "Assuming IAM Role: $TARGET_ROLE_ARN"
+
+aws sts assume-role \
+  --role-arn "$TARGET_ROLE_ARN" \
+  --role-session-name "K8sRefreshSession"
+
 JSON_OUT=$(aws sts assume-role \
   --role-arn "$TARGET_ROLE_ARN" \
   --role-session-name "K8sRefreshSession")
+echo "$(which sed)"
 
 echo "$JSON_OUT"
 echo "$(echo $JSON_OUT | sed -n 's/.*"AccessKeyId": "\([^"]*\)".*/\1/p')"
