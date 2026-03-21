@@ -50,4 +50,4 @@ spec:
         ports:
         - containerPort: 3000
       imagePullSecrets:
-         - name: ecr-pull-secret
+         - name: ecr-pull-image-secret
