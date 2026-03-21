@@ -14,8 +14,8 @@ JSON_OUT=$(aws sts assume-role \
   --role-arn "$TARGET_ROLE_ARN" \
   --role-session-name "K8sRefreshSession")
 
-echo $JSON_OUT
-
+echo "$JSON_OUT"
+echo "$(echo $JSON_OUT | sed -n 's/.*"AccessKeyId": "\([^"]*\)".*/\1/p')"
 # Parse credentials using sed
 export AWS_ACCESS_KEY_ID=$(echo $JSON_OUT | sed -n 's/.*"AccessKeyId": "\([^"]*\)".*/\1/p')
 export AWS_SECRET_ACCESS_KEY=$(echo $JSON_OUT | sed -n 's/.*"SecretAccessKey": "\([^"]*\)".*/\1/p')
