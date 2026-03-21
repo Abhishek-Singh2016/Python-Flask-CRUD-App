@@ -18,6 +18,6 @@ RUN pip install -r requirements.txt
 ENV NEW_RELIC_CONFIG_FILE=newrelic.ini
 ENV NEW_RELIC_ENVIRONMENT=production
 
-ENTRYPOINT ["newrelic-admin", "run-program", "python", "app.py.py"]
+ENTRYPOINT ["newrelic-admin", "run-program", "python", "app.py"]
 # executed when a container is run based on this image
 #CMD ["python", "main.py"]
