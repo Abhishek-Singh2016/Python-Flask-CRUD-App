@@ -1,0 +1,76 @@
+name: Python app deploy on k8s
+on:
+  #push:
+  #  branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+        image-name:
+          description: 'Docker image name with tag to deploy'
+          required: true # This enables the manual "Run workflow" button
+        
+jobs:
+  Build-pythonapp-FLASK:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # Required for OIDC
+      contents: read    # Required for Checkout
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2    
+
+      - name: image creation and push to ecr
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPO: abhishek-ecr/abhishek-ecr
+          TAG: v1.0.${{ github.run_number }}
+          KUBECONFIG: ./kubeconfig.yaml
+          image-name: ${{ github.event.inputs.image-name }}
+        
+        run: |
+          echo "${{ secrets.KUBECONFIG_DATA }}" > kubeconfig.yaml
+          pwd
+          export KUBECONFIG=$PWD/kubeconfig.yaml
+          cat << EOF >> newrelic.ini
+          [newrelic]
+          license_key = 6811cbe35c008b8c4fb8e02b5c6a4025FFFFNRAL
+          app_name = pythonapp-db
+          log_file = /tmp/newrelic-python-agent.log
+          log_level = debug
+          EOF
+          docker build -f dockerfile -t $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }} .
+          docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }}
+          pwd
+          #kubectl create secret docker-registry ecr-pull-secret \
+          #--docker-server=${{ steps.login-ecr.outputs.registry }}/${{ env.REPO }} \
+          #--docker-username=AWS \
+          #--docker-password=$(aws ecr get-login-password --region us-east-1) \
+          #--namespace=python-flask-app
+          envsubst < app-deployment-template.yaml > python-app-deployment.yaml
+          #envsubst < mysql-deployment-template.yaml > mysql-deployment.yaml
+          kubectl apply -f ./python-app-deployment.yaml --kubeconfig=./kubeconfig.yaml
+          #kubectl apply -f ./python-app-service.yaml --kubeconfig=./kubeconfig.yaml
+          #kubectl apply -f ./mysql-deployment.yaml --kubeconfig=./kubeconfig.yaml
+          kubectl apply -f ./app-svc.yaml --kubeconfig=./kubeconfig.yaml
+          #kubectl apply -f ./mysql-secret-model.yaml --kubeconfig=./kubeconfig.yaml
+          #kubectl apply -f ./python-app-secret.yaml --kubeconfig=./kubeconfig.yaml
+          #kubectl apply -f ./pv.yaml --kubeconfig=./kubeconfig.yaml
+          #kubectl apply -f ./pvc.yaml --kubeconfig=./kubeconfig.yaml
+          kubectl get all --kubeconfig=./kubeconfig.yaml
+          kubectl get secrets --kubeconfig=./kubeconfig.yaml
+          
+          #docker pull 702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:Terraform_golden_image_v1.0.16
+
+
+
+
+  

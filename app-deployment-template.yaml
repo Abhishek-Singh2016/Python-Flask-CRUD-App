@@ -1,0 +1,53 @@
+# because we are talking to the api server of the control plane which controls the nodes. can be done through yaml or json files
+# this file is the deployment and service of the web app aplication
+# deployment configuration:
+
+# defines the API server endpoint that manages the object we deploy.
+apiVersion: apps/v1
+
+# the deployment is the 1st part of the configuration file. it is a kubernetes configuration file
+# kind key defines the workload this deployment creates.
+# deployment = template for creatin pods
+kind: Deployment
+metadata:
+  # name of the deployment
+  name: python-app-deployment
+  labels:
+     app: python_app
+spec:
+  # create 1 replica pods called webapp with each replica having a container based on the image named nanajanashia/k8s-demo-app:v1.0
+  replicas: 1
+  selector:
+    # labels enable the system to query the cluster for objects that match a label with a specific name. Deployments make use of a label to find and group pods.
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      volumes:
+        # defines the volume named "log-volume" and associates it with the Persistent Volume Claim (PVC) log-pvc.
+        - name: log-volume
+          persistentVolumeClaim:
+            claimName: log-pvc
+      containers:
+      - name: python-app
+        # name of the image that we re using to create the container. after building the image with docker, the image has to be uploaded to minikube
+        image: 702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:${{ github.event.inputs.image-name }}-${{ env.TAG }}
+        #mysql-db-$TAG
+        # <docker hub username>/<image name>
+        #image: vcr131/image_mov_app_python:latest  
+        # Never is image is local. 
+        imagePullPolicy: IfNotPresent
+        # mounts the volume at the path /app/logs inside the container.
+        volumeMounts:
+          - name: log-volume
+            # for this path, look in the dockerfile that creates the image of the python app and in the logging config file for the path of the log file
+            # never use /usr/app/src, so same as WORKDIR from dockerfile, because the mount will mask the script files and you will get main.py not found error
+            mountPath: /usr/app/src/logs
+        # configure port and env variables of container
+        ports:
+        - containerPort: 3000
+      imagePullSecrets:
+         - name: ecr-pull-secret
