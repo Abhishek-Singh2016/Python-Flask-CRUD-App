@@ -51,10 +51,10 @@ jobs:
           docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }}
           pwd
           echo "702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:$image_name-$TAG"
-          kubectl create secret docker-registry ecr-pull-image-secret \
-          --docker-server=${{ steps.login-ecr.outputs.registry }}/${{ env.REPO }} \
-          --docker-username=AWS \
-          --docker-password=$(aws ecr get-login-password --region us-east-1)
+          #kubectl create secret docker-registry ecr-pull-image-secret \
+          #--docker-server=${{ steps.login-ecr.outputs.registry }}/${{ env.REPO }} \
+          #--docker-username=AWS \
+          #--docker-password=$(aws ecr get-login-password --region us-east-1)
           #--namespace=python-flask-app
           envsubst < app-deployment-template.yaml > python-app-deployment.yaml
           #envsubst < mysql-deployment-template.yaml > mysql-deployment.yaml
