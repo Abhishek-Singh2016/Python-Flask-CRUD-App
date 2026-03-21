@@ -34,7 +34,7 @@ spec:
       containers:
       - name: python-app
         # name of the image that we re using to create the container. after building the image with docker, the image has to be uploaded to minikube
-        image: 702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:${{ github.event.inputs.image-name }}-${{ env.TAG }}
+        image: 702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:$image-name-$TAG
         #mysql-db-$TAG
         # <docker hub username>/<image name>
         #image: vcr131/image_mov_app_python:latest  
