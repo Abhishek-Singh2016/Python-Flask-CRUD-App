@@ -60,7 +60,7 @@ jobs:
           docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }}
           docker build -f dockerfile-cron-secret-update -t $ECR_REGISTRY/$REPO:${{ github.event.inputs.cron-image-name }}-${{ env.TAG }} .
           docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.cron-image-name }}-${{ env.TAG }}
-          envsubst < ./templates/secret-refresher-cron-template.yaml > secret-refresher-cron.yaml
+          envsubst < ./templates/secret-refresher-cron-template.yaml > ./templates/secret-refresher-cron.yaml
           kubectl apply -f ./templates/serviceaccount-refresh.yaml --kubeconfig=./kubeconfig.yaml
           kubectl apply -f ./templates/secret-refresher-cron.yaml --kubeconfig=./kubeconfig.yaml
           kubectl get cronjobs --kubeconfig=./kubeconfig.yaml
