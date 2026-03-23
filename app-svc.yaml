@@ -15,7 +15,7 @@ metadata:
 spec:
   # by default this service is internal service, to make it external (app accesible from by external person through browser). default for internal is type: ClusterIP
   # nodeport is external service type
-  type: LoadBalancer
+  #type: LoadBalancer
   selector: 
     # this must match the label of the template app: in the deployment so that the service know what pod to service
     app: python-app
